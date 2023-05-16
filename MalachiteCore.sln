@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MalachiteCore", "MalachiteCore\MalachiteCore.csproj", "{4AAC39F0-4D0C-4690-A10C-F3DD5E81FEA5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4AAC39F0-4D0C-4690-A10C-F3DD5E81FEA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4AAC39F0-4D0C-4690-A10C-F3DD5E81FEA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4AAC39F0-4D0C-4690-A10C-F3DD5E81FEA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4AAC39F0-4D0C-4690-A10C-F3DD5E81FEA5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
