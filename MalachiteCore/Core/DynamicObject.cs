@@ -5,6 +5,7 @@ public class DynamicObject
 {
     DynamicNode? head;
     DynamicNode? tail;
+    DynamicNode? iteration;
     int size = 0;
     Dictionary<string, DynamicNode> keyToNode = new();
 
@@ -19,7 +20,7 @@ public class DynamicObject
     }
 
 
-    public void put(string key, object value)
+    public void Put(string key, object value)
     {
         if (key == null || value == null)
         {
@@ -46,7 +47,7 @@ public class DynamicObject
         keyToNode.Add(key, dn);
     }
 
-    public object get(string key)
+    public object Get(string key)
     {
         if (keyToNode.ContainsKey(key))
         {
@@ -55,7 +56,7 @@ public class DynamicObject
         return null;
     }
 
-    public void remove(string key)
+    public void Remove(string key)
     {
         if (keyToNode.ContainsKey(key))
         {
@@ -93,6 +94,18 @@ public class DynamicObject
             keyToNode.Remove(key);
         }
     }
+
+    public bool ContainsKey(string key)
+    {
+        return keyToNode.ContainsKey(key);
+    }
+
+    public int Size()
+    {
+        return size;
+    }
+
+
 
 }
 
