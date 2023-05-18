@@ -2,15 +2,33 @@
 
 Console.WriteLine("Hello, World!");
 
-ItemTest it = new ItemTest("asdfasdfasdfasdfasdf");
-it.Properties.Put("123", "1234");
-it.Properties.Put("adsf", "123");
-it.Properties.Put("hg", "null");
-it.Properties.Put("hg34", "3453567bgfg");
-while (it.Properties.HasNext())
+ItemTest it = new ItemTest("asd");
+List<string> list = new List<string>();
+for (int k = 0; k < 1000000; k++)
 {
-    KeyValuePair<string,object> kv = it.Properties.Next();
-    Console.WriteLine(kv.Key + " " + kv.Value);
+    string key = k + "";
+    list.Add(key);
 }
-Console.WriteLine(it.Properties.HasNext());
+
+long currentTimestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+int i = 0;
+foreach (string key in list)
+{
+    it.Properties.Add(key, i);
+    i++;
+}
+long end = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+
+
+
+// foreach (KeyValuePair<string, object> kv in it.Properties)
+// {
+//     Console.WriteLine(kv.Key + " " + kv.Value);
+// }
+
+Console.WriteLine("Time: " + (end - currentTimestamp) + " ms");
+Random r = new();
+string index = r.Next(100000).ToString();
+Console.WriteLine($"Key: {index} Value: {it.Properties[index]}");
+Console.WriteLine(it.Properties.Size());
 Console.ReadLine();

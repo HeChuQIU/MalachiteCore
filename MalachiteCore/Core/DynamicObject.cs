@@ -3,18 +3,18 @@ using MalachiteCore.Core;
 
 namespace MalachiteCore.Core;
 
-public class DynamicObject : IEnumerable<object>
+public class DynamicObject : IDictionary<string, object>
 {
-    DynamicNode? head;
-    DynamicNode? tail;
-    DynamicNode? flag;
-    int flagCount = -1;
-    int size = 0;
-    Dictionary<string, DynamicNode> keyToNode = new();
+    private DynamicNode? _head;
+    private DynamicNode? _tail;
+    private DynamicNode? _flag;
+    private int _flagCount = -1;
+    private int _size = 0;
+    private readonly Dictionary<string, DynamicNode> _keyToNode = new();
 
-    private DynamicNode createNode(string key, object value)
+    private DynamicNode CreateNode(string key, object value)
     {
-        DynamicNode dn = new DynamicNode();
+        DynamicNode dn = new();
         dn.Next = null;
         dn.Prev = null;
         dn.Value = value;
@@ -23,153 +23,218 @@ public class DynamicObject : IEnumerable<object>
     }
 
 
-    public void Put(string key, object value)
+    public void Put(string? key, object? value)
     {
         if (key == null || value == null)
         {
             return;
         }
 
-        if (keyToNode.ContainsKey(key))
+        if (_keyToNode.TryGetValue(key, out var node))
         {
-            keyToNode[key].Value = value;
+            node.Value = value;
             return;
         }
 
-        DynamicNode dn = createNode(key, value);
-        if (head == null)
+        DynamicNode dn = CreateNode(key, value);
+        if (_head == null)
         {
-            head = dn;
-            tail = dn;
-            flag = head;
+            _head = dn;
+            _tail = dn;
+            _flag = _head;
         }
         else
         {
-            tail.Next = dn;
-            dn.Prev = tail;
-            tail = dn;
+            _tail.Next = dn;
+            dn.Prev = _tail;
+            _tail = dn;
         }
 
-        size += 1;
-        keyToNode.Add(key, dn);
+        _size += 1;
+        _keyToNode.Add(key, dn);
     }
 
-    public object Get(string key)
+    private object Get(string key)
     {
-        if (keyToNode.ContainsKey(key))
+        if (_keyToNode.TryGetValue(key, out var node))
         {
-            return keyToNode[key].Value;
+            return node.Value;
         }
 
         return null;
     }
 
-    public T Get<T>(string key)
+    public T? Get<T>(string key)
     {
-        if (keyToNode.ContainsKey(key))
+        if (_keyToNode.TryGetValue(key, out var node))
         {
-            return (T)(keyToNode[key].Value);
+            return (T)(node.Value);
         }
 
         return default(T);
     }
 
-    public void Remove(string key)
+    public bool Remove(string key)
     {
-        if (keyToNode.ContainsKey(key))
+        if (!_keyToNode.ContainsKey(key))
+            return false;
+        DynamicNode target = _keyToNode[key];
+        if (target == _head)
         {
-            DynamicNode target = keyToNode[key];
-            if (target == head)
+            DynamicNode temp = target.Next;
+            target.Next = null;
+            if (temp != null)
             {
-                DynamicNode temp = target.Next;
-                target.Next = null;
-                if (temp != null)
-                {
-                    temp.Prev = null;
-                }
-
-                head = temp;
-            }
-            else if (target == tail)
-            {
-                DynamicNode temp = target.Prev;
-                target.Prev = null;
-                if (temp != null)
-                {
-                    temp.Next = null;
-                }
-
-                tail = temp;
-            }
-            else
-            {
-                DynamicNode p1 = target.Prev;
-                DynamicNode p2 = target.Next;
-                p1.Next = p2;
-                p2.Prev = p1;
-                target.Next = null;
-                target.Prev = null;
+                temp.Prev = null;
             }
 
-            size -= 1;
-            keyToNode.Remove(key);
+            _head = temp;
         }
+        else if (target == _tail)
+        {
+            DynamicNode temp = target.Prev;
+            target.Prev = null;
+            if (temp != null)
+            {
+                temp.Next = null;
+            }
+
+            _tail = temp;
+        }
+        else
+        {
+            DynamicNode p1 = target.Prev;
+            DynamicNode p2 = target.Next;
+            p1.Next = p2;
+            p2.Prev = p1;
+            target.Next = null;
+            target.Prev = null;
+        }
+
+        _size -= 1;
+        _keyToNode.Remove(key);
+        return true;
+    }
+
+    public bool TryGetValue(string key, out object value)
+    {
+        value = null;
+        if (!ContainsKey(key))
+            return false;
+
+        value = Get(key);
+        return true;
+    }
+
+    public void Add(string key, object value)
+    {
+        Put(key, value);
     }
 
     public bool ContainsKey(string key)
     {
-        return keyToNode.ContainsKey(key);
+        return _keyToNode.ContainsKey(key);
     }
 
     public int Size()
     {
-        return size;
+        return _size;
     }
 
     public bool HasNext()
     {
-        return flagCount < size - 1;
+        return _flagCount < _size - 1;
     }
 
     public KeyValuePair<string, object> Next()
     {
-        if (head == null || flagCount == size - 1)
+        if (_head == null || _flagCount == _size - 1)
         {
             return new KeyValuePair<string, object>();
         }
 
-        if (flagCount == -1)
+        if (_flagCount == -1)
         {
-            flag = head.Next;
-            flagCount += 1;
-            return new KeyValuePair<string, object>(head.Key, head.Value);
+            _flag = _head.Next;
+            _flagCount += 1;
+            return new KeyValuePair<string, object>(_head.Key, _head.Value);
         }
         else
         {
-            DynamicNode dn = flag;
-            flag = flag.Next;
-            flagCount += 1;
+            DynamicNode dn = _flag;
+            _flag = _flag.Next;
+            _flagCount += 1;
             return new KeyValuePair<string, object>(dn.Key, dn.Value);
         }
     }
 
     public void Reset()
     {
-        flag = null;
-        flagCount = -1;
+        _flag = null;
+        _flagCount = -1;
     }
 
-    public object this[string key] => Get(key);
-
-    public IEnumerator<object> GetEnumerator()
+    public object this[string key]
     {
-        throw new NotImplementedException();
+        get => Get(key);
+        set => Put(key, value);
+    }
+
+    public ICollection<string> Keys => _keyToNode.Keys;
+    public ICollection<object> Values => _keyToNode.Values.Select(x => x.Value).ToList();
+
+    public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
+    {
+        while (HasNext())
+            yield return Next();
+
+        Reset();
     }
 
     IEnumerator IEnumerable.GetEnumerator()
     {
         return GetEnumerator();
     }
+
+    public void Add(KeyValuePair<string, object> item)
+    {
+        Add(item.Key, item.Value);
+    }
+
+    public void Clear()
+    {
+        _head = null;
+        _tail = null;
+        _flag = null;
+        _flagCount = -1;
+        _size = 0;
+        _keyToNode.Clear();
+    }
+
+    public bool Contains(KeyValuePair<string, object> item)
+    {
+        if (TryGetValue(item.Key, out var value))
+            return true;
+        return false;
+    }
+
+    public void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
+    {
+        int i = arrayIndex;
+        foreach (var item in this)
+        {
+            array[i] = item;
+            i++;
+        }
+    }
+
+    public bool Remove(KeyValuePair<string, object> item)
+    {
+        return Remove(item.Key);
+    }
+
+    public int Count => _size;
+    public bool IsReadOnly => false;
 }
 
 internal class DynamicNode
@@ -177,7 +242,7 @@ internal class DynamicNode
     public DynamicNode? Next;
     public DynamicNode? Prev;
     public string? Key;
-    public object? Value;
+    public object Value;
 
     public DynamicNode()
     {
