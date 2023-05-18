@@ -16,7 +16,7 @@ public abstract class Registrable
 
     protected Registrable()
     {
-        foreach (var propertyInfo in this.GetType().GetProperties())
+        foreach (var propertyInfo in GetType().GetProperties())
         {
             PropertiesType.Add(propertyInfo.Name, propertyInfo.PropertyType);
             PropertyInfos.Add(propertyInfo.Name,propertyInfo);
