@@ -1,5 +1,4 @@
 using System.Collections;
-using MalachiteCore.Core;
 
 namespace MalachiteCore.Core;
 
@@ -9,21 +8,21 @@ public class DynamicObject : IDictionary<string, object>
     private DynamicNode? _tail;
     private DynamicNode? _flag;
     private int _flagCount = -1;
-    private int _size = 0;
+    private int _size;
     private readonly Dictionary<string, DynamicNode> _keyToNode = new();
 
     private DynamicNode CreateNode(string key, object value)
     {
-        DynamicNode dn = new();
-        dn.Next = null;
-        dn.Prev = null;
-        dn.Value = value;
-        dn.Key = key;
+        DynamicNode dn = new(key, value)
+        {
+            Next = null,
+            Prev = null,
+        };
         return dn;
     }
 
 
-    public void Put(string? key, object? value)
+    private void Put(string? key, object? value)
     {
         if (key == null || value == null)
         {
@@ -37,7 +36,7 @@ public class DynamicObject : IDictionary<string, object>
         }
 
         DynamicNode dn = CreateNode(key, value);
-        if (_head == null)
+        if (_head == null||_tail==null)
         {
             _head = dn;
             _tail = dn;
@@ -61,14 +60,14 @@ public class DynamicObject : IDictionary<string, object>
             return node.Value;
         }
 
-        return null;
+        throw new KeyNotFoundException();
     }
 
     public T? Get<T>(string key)
     {
         if (_keyToNode.TryGetValue(key, out var node))
         {
-            return (T)(node.Value);
+            return (T?)(node.Value);
         }
 
         return default(T);
@@ -81,7 +80,7 @@ public class DynamicObject : IDictionary<string, object>
         DynamicNode target = _keyToNode[key];
         if (target == _head)
         {
-            DynamicNode temp = target.Next;
+            DynamicNode? temp = target.Next;
             target.Next = null;
             if (temp != null)
             {
@@ -92,7 +91,7 @@ public class DynamicObject : IDictionary<string, object>
         }
         else if (target == _tail)
         {
-            DynamicNode temp = target.Prev;
+            DynamicNode? temp = target.Prev;
             target.Prev = null;
             if (temp != null)
             {
@@ -103,8 +102,8 @@ public class DynamicObject : IDictionary<string, object>
         }
         else
         {
-            DynamicNode p1 = target.Prev;
-            DynamicNode p2 = target.Next;
+            DynamicNode? p1 = target.Prev;
+            DynamicNode? p2 = target.Next;
             p1.Next = p2;
             p2.Prev = p1;
             target.Next = null;
@@ -116,7 +115,7 @@ public class DynamicObject : IDictionary<string, object>
         return true;
     }
 
-    public bool TryGetValue(string key, out object value)
+    public bool TryGetValue(string key, out object? value)
     {
         value = null;
         if (!ContainsKey(key))
@@ -161,10 +160,10 @@ public class DynamicObject : IDictionary<string, object>
         }
         else
         {
-            DynamicNode dn = _flag;
+            DynamicNode? dn = _flag;
             _flag = _flag.Next;
             _flagCount += 1;
-            return new KeyValuePair<string, object>(dn.Key, dn.Value);
+            return new KeyValuePair<string, object?>(dn.Key, dn.Value);
         }
     }
 
@@ -211,12 +210,7 @@ public class DynamicObject : IDictionary<string, object>
         _keyToNode.Clear();
     }
 
-    public bool Contains(KeyValuePair<string, object> item)
-    {
-        if (TryGetValue(item.Key, out var value))
-            return true;
-        return false;
-    }
+    public bool Contains(KeyValuePair<string, object> item) => ContainsKey(item.Key);
 
     public void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
     {
@@ -241,14 +235,10 @@ internal class DynamicNode
 {
     public DynamicNode? Next;
     public DynamicNode? Prev;
-    public string? Key;
+    public string Key;
     public object Value;
 
-    public DynamicNode()
-    {
-    }
-
-    public DynamicNode(string key, object? value)
+    public DynamicNode(string key, object value)
     {
         this.Key = key;
         this.Value = value;

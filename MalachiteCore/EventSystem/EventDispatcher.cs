@@ -5,7 +5,7 @@ namespace MalachiteCore.EventSystem;
 
 public class EventDispatcher
 {
-    private Dictionary<string, List<ReceiverInfo>> subs = new();
+    private readonly Dictionary<string, List<ReceiverInfo>> _subs = new();
     public void Subscribe(string senderId, ItemEventBase receiver, string methodName)
     {
         if (senderId == null || receiver == null || methodName == null)
@@ -13,28 +13,27 @@ public class EventDispatcher
             return;
         }
         ReceiverInfo ri = new ReceiverInfo(receiver, methodName);
-        if (subs.ContainsKey(senderId))
+        if (_subs.TryGetValue(senderId, out var sub))
         {
-            subs[senderId].Add(ri);
+            sub.Add(ri);
         }
         else
         {
             List<ReceiverInfo> list = new();
             list.Add(ri);
-            subs.Add(senderId, list);
+            _subs.Add(senderId, list);
         }
     }
 
     public void Send(string senderId, DynamicObject message)
     {
-        if (subs.ContainsKey(senderId))
+        if (_subs.TryGetValue(senderId, out var sub))
         {
-            List<ReceiverInfo> list = subs[senderId];
-            for (int i = 0; i < list.Count; i++)
+            for (int i = 0; i < sub.Count; i++)
             {
                 try
                 {
-                    list[i].method.Invoke(list[i].receiver, new object[] { message });
+                    sub[i].Method.Invoke(sub[i].Receiver, new object[] { message });
                 }
                 catch (Exception e)
                 {
@@ -48,28 +47,28 @@ public class EventDispatcher
 
 class ReceiverInfo
 {
-    public ItemEventBase? receiver;
+    public ItemEventBase? Receiver;
 
-    public string? methodName;
+    public string? MethodName;
 
-    public MethodInfo method;
+    public MethodInfo Method;
 
 
     public ReceiverInfo() { }
     public ReceiverInfo(ItemEventBase receiver, string methodName)
     {
-        this.receiver = receiver;
-        this.methodName = methodName;
+        this.Receiver = receiver;
+        this.MethodName = methodName;
     }
 
     public void SetMethodInfo()
     {
-        Type type = this.receiver.GetType();
-        MethodInfo method = type.GetMethod(methodName);
+        Type type = this.Receiver.GetType();
+        MethodInfo method = type.GetMethod(MethodName);
         if (method == null)
         {
             return;
         }
-        this.method = method;
+        this.Method = method;
     }
 }
