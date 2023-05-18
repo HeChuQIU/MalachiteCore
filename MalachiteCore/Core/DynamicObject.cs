@@ -1,12 +1,14 @@
+using System.Collections;
 using MalachiteCore.Core;
 
 namespace MalachiteCore.Core;
 
-public class DynamicObject
+public class DynamicObject : IEnumerable<object>
 {
     DynamicNode? head;
     DynamicNode? tail;
-    DynamicNode? iteration;
+    DynamicNode? flag;
+    int flagCount = -1;
     int size = 0;
     Dictionary<string, DynamicNode> keyToNode = new();
 
@@ -39,6 +41,7 @@ public class DynamicObject
         {
             head = dn;
             tail = dn;
+            flag = head;
         }
         else
         {
@@ -123,7 +126,50 @@ public class DynamicObject
         return size;
     }
 
+    public bool HasNext()
+    {
+        return flagCount < size - 1;
+    }
+
+    public KeyValuePair<string, object> Next()
+    {
+        if (head == null || flagCount == size - 1)
+        {
+            return new KeyValuePair<string, object>();
+        }
+
+        if (flagCount == -1)
+        {
+            flag = head.Next;
+            flagCount += 1;
+            return new KeyValuePair<string, object>(head.Key, head.Value);
+        }
+        else
+        {
+            DynamicNode dn = flag;
+            flag = flag.Next;
+            flagCount += 1;
+            return new KeyValuePair<string, object>(dn.Key, dn.Value);
+        }
+    }
+
+    public void Reset()
+    {
+        flag = null;
+        flagCount = -1;
+    }
+
     public object this[string key] => Get(key);
+
+    public IEnumerator<object> GetEnumerator()
+    {
+        throw new NotImplementedException();
+    }
+
+    IEnumerator IEnumerable.GetEnumerator()
+    {
+        return GetEnumerator();
+    }
 }
 
 internal class DynamicNode

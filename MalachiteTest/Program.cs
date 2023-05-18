@@ -3,11 +3,14 @@
 Console.WriteLine("Hello, World!");
 
 ItemTest it = new ItemTest("asdfasdfasdfasdfasdf");
-it.Properties.Put("🗡", "1234");
-it.Properties.Put("魔法", "123");
-it.Properties.Put("套装", "null");
-
-Console.WriteLine(it.Properties.Get<string>("套装"));
-it.Properties.Remove("套装");
-Console.WriteLine(it.Properties.ContainsKey("套装"));
+it.Properties.Put("123", "1234");
+it.Properties.Put("adsf", "123");
+it.Properties.Put("hg", "null");
+it.Properties.Put("hg34", "3453567bgfg");
+while (it.Properties.HasNext())
+{
+    KeyValuePair<string,object> kv = it.Properties.Next();
+    Console.WriteLine(kv.Key + " " + kv.Value);
+}
+Console.WriteLine(it.Properties.HasNext());
 Console.ReadLine();
