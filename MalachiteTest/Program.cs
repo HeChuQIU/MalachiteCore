@@ -7,10 +7,11 @@ it.Properties.Put("123", "1234");
 it.Properties.Put("adsf", "123");
 it.Properties.Put("hg", "null");
 it.Properties.Put("hg34", "3453567bgfg");
-while (it.Properties.HasNext())
+
+foreach (KeyValuePair<string, object> kv in it.Properties)
 {
-    KeyValuePair<string,object> kv = it.Properties.Next();
     Console.WriteLine(kv.Key + " " + kv.Value);
 }
+
 Console.WriteLine(it.Properties.HasNext());
 Console.ReadLine();
