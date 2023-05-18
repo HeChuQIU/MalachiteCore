@@ -56,6 +56,15 @@ public class DynamicObject
         return null;
     }
 
+    public T Get<T>(string key)
+    {
+        if (keyToNode.ContainsKey(key))
+        {
+            return (T)(keyToNode[key].Value);
+        }
+        return default(T);
+    }
+
     public void Remove(string key)
     {
         if (keyToNode.ContainsKey(key))

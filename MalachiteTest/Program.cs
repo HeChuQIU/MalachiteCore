@@ -7,7 +7,7 @@ it.Properties.Put("🗡", "1234");
 it.Properties.Put("魔法", "123");
 it.Properties.Put("套装", "null");
 
-Console.WriteLine(it.Properties.Get("套装"));
-it.Properties.remove("套装");
+Console.WriteLine(it.Properties.Get<string>("套装"));
+it.Properties.Remove("套装");
 Console.WriteLine(it.Properties.ContainsKey("套装"));
 Console.ReadLine();

@@ -7,14 +7,4 @@ public class ItemTest : ItemBase
 
     }
 
-    public void setProperties(string key, object value)
-    {
-        this.Properties.put(key, value);
-    }
-
-    public object getProperties(string key)
-    {
-        return this.Properties.get(key);
-    }
-
 }
