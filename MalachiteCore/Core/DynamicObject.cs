@@ -1,4 +1,5 @@
 using MalachiteCore.Core;
+
 namespace MalachiteCore.Core;
 
 public class DynamicObject
@@ -26,11 +27,13 @@ public class DynamicObject
         {
             return;
         }
+
         if (keyToNode.ContainsKey(key))
         {
             keyToNode[key].Value = value;
             return;
         }
+
         DynamicNode dn = createNode(key, value);
         if (head == null)
         {
@@ -43,6 +46,7 @@ public class DynamicObject
             dn.Prev = tail;
             tail = dn;
         }
+
         size += 1;
         keyToNode.Add(key, dn);
     }
@@ -53,6 +57,7 @@ public class DynamicObject
         {
             return keyToNode[key].Value;
         }
+
         return null;
     }
 
@@ -62,6 +67,7 @@ public class DynamicObject
         {
             return (T)(keyToNode[key].Value);
         }
+
         return default(T);
     }
 
@@ -78,6 +84,7 @@ public class DynamicObject
                 {
                     temp.Prev = null;
                 }
+
                 head = temp;
             }
             else if (target == tail)
@@ -88,6 +95,7 @@ public class DynamicObject
                 {
                     temp.Next = null;
                 }
+
                 tail = temp;
             }
             else
@@ -99,6 +107,7 @@ public class DynamicObject
                 target.Next = null;
                 target.Prev = null;
             }
+
             size -= 1;
             keyToNode.Remove(key);
         }
@@ -114,10 +123,8 @@ public class DynamicObject
         return size;
     }
 
-
-
+    public object this[string key] => Get(key);
 }
-
 
 internal class DynamicNode
 {
@@ -125,9 +132,11 @@ internal class DynamicNode
     public DynamicNode? Prev;
     public string? Key;
     public object? Value;
+
     public DynamicNode()
     {
     }
+
     public DynamicNode(string key, object? value)
     {
         this.Key = key;
