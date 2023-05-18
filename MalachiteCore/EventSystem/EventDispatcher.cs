@@ -5,6 +5,14 @@ namespace MalachiteCore.EventSystem;
 
 public class EventDispatcher
 {
+
+    private static EventDispatcher instance = new();
+
+    public static EventDispatcher GetInstance()
+    {
+        return instance;
+    }
+
     private Dictionary<string, List<ReceiverInfo>> subs = new();
     public void Subscribe(string senderId, ItemEventBase receiver, string methodName)
     {
