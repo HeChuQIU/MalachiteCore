@@ -2,7 +2,7 @@ using System.Collections;
 
 namespace MalachiteCore.Core;
 
-public class DynamicObject : IDictionary<string, object>
+public class DynamicObject : IDictionary<string, object>, ICloneable
 {
     private DynamicNode? _head;
     private DynamicNode? _tail;
@@ -36,7 +36,7 @@ public class DynamicObject : IDictionary<string, object>
         }
 
         DynamicNode dn = CreateNode(key, value);
-        if (_head == null||_tail==null)
+        if (_head == null || _tail == null)
         {
             _head = dn;
             _tail = dn;
@@ -229,6 +229,11 @@ public class DynamicObject : IDictionary<string, object>
 
     public int Count => _size;
     public bool IsReadOnly => false;
+
+    public object Clone()
+    {
+        throw new NotImplementedException();
+    }
 }
 
 internal class DynamicNode
