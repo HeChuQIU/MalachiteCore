@@ -1,6 +1,6 @@
 namespace MalachiteCore.Core;
 
-public abstract class RegistrableObject : DynamicObject, IRegistrableData
+public abstract class RegistrableObject : DynamicObject
 {
     public string Id { get; protected set; }
     public string Group { get; protected set; }
@@ -10,4 +10,6 @@ public abstract class RegistrableObject : DynamicObject, IRegistrableData
         Id = id;
         Group = group;
     }
+
+//TODO
 }

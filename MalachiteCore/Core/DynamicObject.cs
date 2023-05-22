@@ -173,7 +173,7 @@ public class DynamicObject : IDictionary<string, object>, ICloneable
         _flagCount = -1;
     }
 
-    public object this[string key]
+    public virtual object this[string key]
     {
         get => Get(key);
         set => Put(key, value);
@@ -195,7 +195,7 @@ public class DynamicObject : IDictionary<string, object>, ICloneable
         return GetEnumerator();
     }
 
-    public void Add(KeyValuePair<string, object> item)
+    public virtual void Add(KeyValuePair<string, object> item)
     {
         Add(item.Key, item.Value);
     }
@@ -222,7 +222,7 @@ public class DynamicObject : IDictionary<string, object>, ICloneable
         }
     }
 
-    public bool Remove(KeyValuePair<string, object> item)
+    public virtual bool Remove(KeyValuePair<string, object> item)
     {
         return Remove(item.Key);
     }
